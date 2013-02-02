@@ -201,6 +201,10 @@ class Board(object):
     return board_copy
 
   def evaluate(self):
+    js = []
+    for point in self.block.squares():
+      js.append(point.j)
+    height = max(js) * -1
     return random.random()
 
 
@@ -241,39 +245,6 @@ def best_move(board):
       pass
 
   return max(evaluation, key = lambda t: t[1])[0]
-    # evaluate the move that results from doing these commands
-    # choose the best one
-    # get the argmax of the list of evaluated moves
-  
-      
-
-
-"""
-  while board_copy.block.checked_left(board_copy):
-    moves.append("left")
-    
-  while board.check():
-    test_move = list(moves)
-    for i in range(4):
-      for _ in range(i)
-        test_board = board_copy.copy()
-        test_board.block.rotate
-      if test_board.block.check(board_copy):
-        for _ in range(i):
-          test_move.append("rotate")
-        test_move.append("place")
-        test_board.block.place()
-        evaluation.append((test_move, test_board.evaluate()))
-    if board_copy.block.checked_right():
-      try(last_move = moves.pop()):
-        if last_move != "left":
-          moves += ["right", "right"]
-      except:
-        moves.append("right")
-
-
-  return 
-"""    
 
 
 
