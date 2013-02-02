@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 #
 # Sample dropblox_ai exectuable.
 #
@@ -6,6 +6,8 @@
 import json
 import sys
 import time
+import copy
+import random
 
 class InvalidMoveError(ValueError):
   pass
@@ -122,6 +124,7 @@ class Board(object):
     self.bitmap = bitmap
     self.block = block
     self.preview = preview
+    self.removed_rows
 
   def __repr__(self):
     return str(self)
@@ -174,6 +177,8 @@ class Board(object):
   # If there are no blocks left in the preview list, this method will fail badly!
   # This is okay because we don't expect to look ahead that far.
   def place(self):
+    self.removed_rows = 0
+
     while self.check(self.block):
       self.block.down()
     self.block.up()
@@ -181,6 +186,8 @@ class Board(object):
     new_bitmap = [list(row) for row in self.bitmap]
     for square in self.block.squares():
       new_bitmap[square.i][square.j] = 1
+
+    self.removed_rows += 1
     new_bitmap = Board.remove_rows(new_bitmap)
     if len(self.preview) == 0:
       print "There are no blocks left in the preview list! You can't look that far ahead."
@@ -193,6 +200,58 @@ class Board(object):
     (rows, cols) = (len(bitmap), len(bitmap[0]))
     new_bitmap = [row for row in bitmap if not all(row)]
     return [cols*[0] for i in range(rows - len(new_bitmap))] + new_bitmap
+
+  def copy(self):
+    board_copy = copy.deepcopy(self)
+    return board_copy
+
+  def evaluate(self):
+    i = []
+    for point in self.block.squares():
+      i.append(point.i)
+    height = min(i) * 1
+    #print js
+    #print height
+    return height + (self.removed_rows * 2)
+
+def best_move(board):
+  evaluation = []
+  moves = []
+
+  for i in range(4):
+    moves.append(["rotate"] * i)
+
+  move = []
+  while board.block.checked_left(board):
+    move.append("left")
+    for i in range(4):
+      temp_move = list(move)
+      temp_move += ["rotate"]* i
+      moves.append(temp_move)
+
+  move = []
+  board.block.reset_position()
+  while board.block.checked_right(board):
+    move.append("right")
+    for i in range(4):
+      temp_move = list(move)
+      temp_move += ["rotate"] * i
+      moves.append(temp_move)
+
+  for m in moves:
+    #print m
+    try:
+      board.block.reset_position()
+      board.do_commands(m)
+      evaluation.append((m, board.evaluate()))
+    except InvalidMoveError:
+      pass
+
+  print max(evaluation, key = lambda t: t[1])[1]
+  return max(evaluation, key = lambda t: t[1])[0]
+
+
+
 
 if __name__ == '__main__':
   if len(sys.argv) == 3:
@@ -207,12 +266,9 @@ if __name__ == '__main__':
     block = board.block
 
     # very simple AI that moves the current block as far left as possible
-    moves = []                  # list of moves to make
-    while board.check(block):   # while the block in in a legal position
-      block.left()              # move the block left
-      moves.append('left')      # append a left command to oure moves list
-    if len(moves) > 0:          # remove that last left command, as it got the block into an illegal state
-      moves.pop()
+    
+
+    moves = best_move(board)                  # list of moves to make
     for move in moves:          # print our moves
       print move
     sys.stdout.flush()          # flush stdout

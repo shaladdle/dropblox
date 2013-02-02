@@ -124,6 +124,7 @@ class Board(object):
     self.bitmap = bitmap
     self.block = block
     self.preview = preview
+    self.removed_rows
 
   def __repr__(self):
     return str(self)
@@ -176,6 +177,8 @@ class Board(object):
   # If there are no blocks left in the preview list, this method will fail badly!
   # This is okay because we don't expect to look ahead that far.
   def place(self):
+    self.removed_rows = 0
+
     while self.check(self.block):
       self.block.down()
     self.block.up()
@@ -183,6 +186,8 @@ class Board(object):
     new_bitmap = [list(row) for row in self.bitmap]
     for square in self.block.squares():
       new_bitmap[square.i][square.j] = 1
+
+    self.removed_rows += 1
     new_bitmap = Board.remove_rows(new_bitmap)
     if len(self.preview) == 0:
       print "There are no blocks left in the preview list! You can't look that far ahead."
@@ -207,10 +212,7 @@ class Board(object):
     height = min(i) * 1
     #print js
     #print height
-    return height
-
-
-
+    return height + (self.removed_rows * 2)
 
 def best_move(board):
   evaluation = []
