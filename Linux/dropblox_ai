@@ -196,7 +196,7 @@ class Board(object):
     new_bitmap = [row for row in bitmap if not all(row)]
     return [cols*[0] for i in range(rows - len(new_bitmap))] + new_bitmap
 
-  def copy(self)
+  def copy(self):
     board_copy = copy.deepcopy(self)
     return board_copy
 
@@ -206,29 +206,31 @@ class Board(object):
 
 
 
-def best_move(board)
+def best_move(board):
   evaluation = []
   moves = []
 
   for i in range(4):
-    moves.append(["rotate" * i])
+    moves.append(["rotate"] * i)
 
   board_copy = board.copy()
   while board_copy.block.checked_left(board_copy):
     for i in range(4):
       move = ["left"]
-      move += ["rotate" * i]
+      move += ["rotate"]* i
       moves.append(move)
 
   board_copy = board.copy()
   while board_copy.block.checked_right(board_copy):
     for i in range(4):
       move = ["right"]
-      move += ["rotate" * i]
+      move += ["rotate"] * i
       moves.append(move)
 
   for m in moves:
+    #print m
     try:
+      board_copy = board.copy()
       board_copy = board_copy.do_commands(m)
       evaluation.append((m, board_copy.evaluate()))
     except InvalidMoveError:
@@ -264,10 +266,10 @@ def best_move(board)
           moves += ["right", "right"]
       except:
         moves.append("right")
-"""    
 
 
   return 
+"""    
 
 
 
@@ -285,12 +287,9 @@ if __name__ == '__main__':
     block = board.block
 
     # very simple AI that moves the current block as far left as possible
-    moves = []                  # list of moves to make
-    while board.check(block):   # while the block in in a legal position
-      block.left()              # move the block left
-      moves.append('left')      # append a left command to oure moves list
-    if len(moves) > 0:          # remove that last left command, as it got the block into an illegal state
-      moves.pop()
+    
+
+    moves = best_move(board)                  # list of moves to make
     for move in moves:          # print our moves
       print move
     sys.stdout.flush()          # flush stdout
