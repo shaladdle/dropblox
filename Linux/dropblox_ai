@@ -124,7 +124,7 @@ class Board(object):
     self.bitmap = bitmap
     self.block = block
     self.preview = preview
-    self.removed_rows
+    self.removed_rows = 0
 
   def __repr__(self):
     return str(self)
