@@ -201,11 +201,13 @@ class Board(object):
     return board_copy
 
   def evaluate(self):
-    js = []
+    i = []
     for point in self.block.squares():
-      js.append(point.j)
-    height = max(js) * -1
-    return random.random()
+      i.append(point.i)
+    height = min(i) * 1
+    #print js
+    #print height
+    return height
 
 
 
@@ -217,18 +219,17 @@ def best_move(board):
   for i in range(4):
     moves.append(["rotate"] * i)
 
-  board_copy = board.copy()
   move = []
-  while board_copy.block.checked_left(board_copy):
+  while board.block.checked_left(board):
     move.append("left")
     for i in range(4):
       temp_move = list(move)
       temp_move += ["rotate"]* i
       moves.append(temp_move)
 
-  board_copy = board.copy()
   move = []
-  while board_copy.block.checked_right(board_copy):
+  board.block.reset_position()
+  while board.block.checked_right(board):
     move.append("right")
     for i in range(4):
       temp_move = list(move)
@@ -238,12 +239,13 @@ def best_move(board):
   for m in moves:
     #print m
     try:
-      board_copy = board.copy()
-      board_copy = board_copy.do_commands(m)
-      evaluation.append((m, board_copy.evaluate()))
+      board.block.reset_position()
+      board.do_commands(m)
+      evaluation.append((m, board.evaluate()))
     except InvalidMoveError:
       pass
 
+  print max(evaluation, key = lambda t: t[1])[1]
   return max(evaluation, key = lambda t: t[1])[0]
 
 
