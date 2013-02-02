@@ -214,18 +214,22 @@ def best_move(board):
     moves.append(["rotate"] * i)
 
   board_copy = board.copy()
+  move = []
   while board_copy.block.checked_left(board_copy):
+    move.append("left")
     for i in range(4):
-      move = ["left"]
-      move += ["rotate"]* i
-      moves.append(move)
+      temp_move = list(move)
+      temp_move += ["rotate"]* i
+      moves.append(temp_move)
 
   board_copy = board.copy()
+  move = []
   while board_copy.block.checked_right(board_copy):
+    move.append("right")
     for i in range(4):
-      move = ["right"]
-      move += ["rotate"] * i
-      moves.append(move)
+      temp_move = list(move)
+      temp_move += ["rotate"] * i
+      moves.append(temp_move)
 
   for m in moves:
     #print m
